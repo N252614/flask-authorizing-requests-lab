@@ -69,8 +69,8 @@ class Logout(Resource):
 
     def delete(self):
 
-        session['user_id'] = None
-        
+        # Completely clear the session on logout
+        session.clear()
         return {}, 204
 
 class CheckSession(Resource):
@@ -87,12 +87,39 @@ class CheckSession(Resource):
 class MemberOnlyIndex(Resource):
     
     def get(self):
-        pass
+        # Check if the user is logged in
+        if not session.get('user_id'):
+            # User is not authenticated
+            return {'error': 'Unauthorized'}, 401
+
+        # Query only member-only articles
+        member_articles = Article.query.filter(
+            Article.is_member_only == True
+        ).all()
+
+        # Serialize articles
+        articles_json = [
+            ArticleSchema().dump(article)
+            for article in member_articles
+        ]
+
+        return articles_json, 200
 
 class MemberOnlyArticle(Resource):
-    
     def get(self, id):
-        pass
+        # Only logged-in users can access this route
+        if not session.get('user_id'):
+            return {'error': 'Unauthorized'}, 401
+
+        # Find the article by id (any article)
+        article = Article.query.filter(Article.id == id).first()
+
+        # If the article does not exist
+        if not article:
+            return {'error': 'Not Found'}, 404
+
+        # Return the article data
+        return ArticleSchema().dump(article), 200
 
 api.add_resource(ClearSession, '/clear', endpoint='clear')
 api.add_resource(IndexArticle, '/articles', endpoint='article_list')
