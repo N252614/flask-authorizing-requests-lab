@@ -121,3 +121,39 @@ Before you submit your solution, you need to save your progress with git.
 3. Push your commits to GitHub by executing `git push origin main`.
 
 CodeGrade will grade your lab using the same tests as are provided in the `testing/` directory.
+
+
+# Flask Authorizing Requests Lab
+
+This project demonstrates session-based authentication and authorization
+using Flask and Flask-RESTful.
+
+## Features
+- User login and logout using sessions
+- Protected routes доступные только авторизованным пользователям
+- Member-only articles index and detail routes
+- Proper HTTP status codes (200, 401, 404)
+- Full test coverage with pytest
+
+## Key Endpoints
+- `POST /login` — log in a user
+- `DELETE /logout` — log out (clears session)
+- `GET /check_session` — check current session
+- `GET /members_only_articles` — list of articles (login required)
+- `GET /members_only_articles/<id>` — article details (login required)
+
+## Setup
+```bash
+pipenv install
+pipenv shell
+cd server
+flask db upgrade
+python seed.py
+```
+## Run Tests
+```bash
+cd server
+pytest
+```
+## Screenshot
+![App Screenshot](./screenshot.png)
